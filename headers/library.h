@@ -4,12 +4,8 @@
 using namespace std;
 
 class Document {  
-  Document(string cPublisher, string cDate, vector <string> cAuthors, string cName) {
-    Publisher = cPublisher;
-    Date = cDate;
-    Authors = cAuthors;
-    Name = cName;
-  }
+  public:
+	Document(string cPublisher, string cDate, vector <string> cAuthors, string cName);
   private:
     string Publisher;
     string Date;
@@ -18,10 +14,8 @@ class Document {
 };
 
 class User {
-  User(string cName, unsigned int cID) {
-    Name = cNmae;
-    ID = cID;
-  }
+  public:
+	User(string cName, unsigned int cID);
   private: 
     string Name;
     unsigned int ID;
