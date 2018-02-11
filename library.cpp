@@ -1,15 +1,40 @@
 #include "headers\library.h"
+#include "headers\date.h"
 
-User::User(string cName, unsigned int cID) {
-	User::Name = cName;
-	User::ID = cID;
+using namespace std;
+
+User::User(string cName) {
+	set_name(cName);
 }
 
-Document::Document(string cPublisher, string cDate, vector <string> cAuthors, string cName) {
-	Document::Publisher = cPublisher;
-	Document::Date = cDate;
-	Document::Authors = cAuthors;
-	Document::Name = cName;
+User::User() {}
+
+void User::set_name(string cName) {
+	Name = cName;
 }
 
-/**/
+string User::get_name() {
+	return Name;
+}
+
+Document::Document() {}
+
+Document::Document(string cPublisher, Date cDate, vector <string> cAuthors, string cTitle) {
+
+}
+
+vector <string> Document::get_authors() {
+	return Authors;
+}
+
+Date Document::get_date() {
+	return Date;
+}
+
+string Document::get_publisher() {
+	return Publisher;
+}
+
+string Document::get_title() {
+	return Name;
+}

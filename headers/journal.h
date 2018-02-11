@@ -1,15 +1,14 @@
+#pragma once
+
 #include <string>
 #include <vector>
 #include "date.h"
 
 class Journal {
-  Journal(string cTitle, unsigned int Issue, vector <string> cEditors, Date cPublicationDate) {
-    Title = cTitle;
-    Issue = cIssue;
-    Editors = cEditors;
-    PublicationDate = cPublicationDate;
-  }
-
+  public:
+	Journal(string, unsigned int, vector <string>, Date);
+	Journal();
+	Journal& operator=(const Journal&);
   private:
     string Title;
     unsigned int Issue;

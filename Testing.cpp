@@ -1,33 +1,47 @@
 #include <iostream>
-#include "sqlite3.h"
+#include "sqlite.h"
 #include "headers\library.h"
+#include "headers\librarian.h"
 #include <string>
 
 using namespace std;
 
-sqlite3* connection_handle;
-sqlite3_stmt *query;
-bool logged_in = false;
-bool librarian = false;
-
-#define COLUMN_ADMIN 1
-
 void proceed_command(string command, bool usertype) {
-	if (command == "add patron") {
-		cout << "Insert patron's name: ";
-		string name;
-		cin >> name;
-		cout << "Insert patron's password: ";
-		string password;
-		cin >> password;
-		string squery = "INSERT INTO `users` (`name`, `password`) VALUES ('" + name + "', '" + password + "')";
-		sqlite3_prepare(connection_handle, squery.c_str(), -1, &query, 0);
-		int rc = sqlite3_step(query);
-		if (rc == SQLITE_DONE) {
-			cout << "Successfully done!";
+	if (usertype) {
+		Librarian lb = Librarian();
+		if (command == "add_patron") {
+			string name;
+			cout << "Enter a name: ";
+			cin >> name;
+			lb.add_patron(User(name));
 		}
-		else {
-			cout << "Some problems...";
+		if (command == "delete_document") {
+			string title;
+			cout << "Enter a title: ";
+			cin >> title;
+			cout << "Enter a year: ";
+			unsigned int year;
+			cin >> year;
+			unsigned int month;
+			cout << "Enter a month: ";
+			cin >> month;
+			unsigned int day;
+			cout << "Enter a day: ";
+			cin >> day;
+			string publisher;
+			cout << "Enter a publisher: ";
+			cin >> publisher;
+		}
+		if (command == "edit_patron") {
+			string name;
+			cout << "Enter a name: ";
+			cin >> name;
+		}
+		if (command == "get_overdue_documents") {
+			vector <Document> documents = lb.get_overdue_documents();
+			for (int i = 0; i < documents.size(); i++) {
+				if ()
+			}
 		}
 	}
 }
@@ -72,9 +86,12 @@ int main() {
 
 	string command;
 
-	User current = User(login, 0);
-
+	User current = User(login);
 	
+	while (command != "exit") {
+		cin >> command;
+		proceed_command(command, librarian);
+	}
 	
 	sqlite3_close(connection_handle);
 	system("pause");

@@ -1,4 +1,6 @@
-#include "headers\patron.h"
+#pragma once
+
+#include "patron.h"
 
 /*class Faculty : public Patron {
 public:

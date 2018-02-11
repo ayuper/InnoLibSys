@@ -1,22 +1,32 @@
+#pragma once
 #include <string>
 #include <vector>
+#include "date.h"
 
 using namespace std;
 
 class Document {  
   public:
-	Document(string cPublisher, string cDate, vector <string> cAuthors, string cName);
+	Document();
+	Document(string, Date, vector <string>, string);
+	Date get_date();
+	vector <string> get_authors();
+	string get_publisher();
+	string get_title();
   private:
     string Publisher;
-    string Date;
+    Date Date;
     vector <string> Authors;
     string Name;
 };
 
 class User {
   public:
-	User(string cName, unsigned int cID);
-  private: 
+	User(string);
+	User();
+	string get_name();
+	void set_name(string);
+private: 
     string Name;
     unsigned int ID;
 };

@@ -1,9 +1,10 @@
+#pragma once
+
 #include "library.h"
 
 class AVMaterial: public Document {
-  AVMaterial(string cTitle) {
-    Title = cTitle;
-  }
+  public:
+	AVMaterial(string cTitle);
   private:
    string Title;
 };
