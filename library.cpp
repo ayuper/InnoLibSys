@@ -1,7 +1,14 @@
 #include "headers\library.h"
 #include "headers\date.h"
+#include <string>
 
 using namespace std;
+
+string document_types[3] = {
+	"Book",
+	"Journal Article",
+	"Audio-Video"
+};
 
 User::User(string cName) {
 	set_name(cName);
@@ -19,8 +26,16 @@ string User::get_name() {
 
 Document::Document() {}
 
-Document::Document(string cPublisher, Date cDate, vector <string> cAuthors, string cTitle) {
+Document::Document(string cPublisher, ::Date cDate, vector <string> cAuthors, string cTitle, unsigned int cType) {
+	Publisher = cPublisher;
+	Date = cDate;
+	Authors = cAuthors;
+	Name = cTitle;
+	Type = cType;
+}
 
+unsigned int Document::get_type() {
+	return Type;
 }
 
 vector <string> Document::get_authors() {

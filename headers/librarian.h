@@ -9,7 +9,7 @@ class Librarian: public User {
   public:
 	void add_document(Document);
 	void delete_document(Document);
-	void modify_document(Document);
+	void modify_document(Document, Document);
 	vector <Document> get_overdue_documents();
 	void add_patron(User);
 	void delete_patron(Patron);

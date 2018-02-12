@@ -40,8 +40,36 @@ void proceed_command(string command, bool usertype) {
 		if (command == "get_overdue_documents") {
 			vector <Document> documents = lb.get_overdue_documents();
 			for (int i = 0; i < documents.size(); i++) {
-				if ()
+				cout << "Type: ";
 			}
+		}
+		if (command == "add_document") {
+			Document new_document;
+			string title;
+			cout << "Enter a title: ";
+			cin >> title;
+			string author;
+			vector <string> authors;
+			cout << "Enter author's name: ";
+			cin >> author;
+			authors.push_back(author);
+			unsigned int type;
+			cout << "Supported types: 0 - book, 1 - journal article, 2 - audio-video\n";
+			cout << "Enter a type: ";
+			cin >> type;
+			string publisher;
+			cout << "Enter a publisher: ";
+			cin >> publisher;
+			unsigned int year, month, day;
+			cout << "Enter a year: ";
+			cin >> year;
+			cout << "Enter a month: ";
+			cin >> month;
+			cout << "Enter a day: ";
+			cin >> day;
+			Date date = Date(day, month, year);
+			new_document = Document(publisher, date, authors, title, type);
+			lb.add_document(new_document);
 		}
 	}
 }

@@ -8,12 +8,14 @@ using namespace std;
 class Document {  
   public:
 	Document();
-	Document(string, Date, vector <string>, string);
+	Document(string, Date, vector <string>, string, unsigned int);
 	Date get_date();
 	vector <string> get_authors();
 	string get_publisher();
 	string get_title();
+	unsigned int get_type();
   private:
+	unsigned int Type;
     string Publisher;
     Date Date;
     vector <string> Authors;
