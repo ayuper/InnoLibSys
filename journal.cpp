@@ -11,7 +11,3 @@ Journal::Journal(string cTitle, unsigned int cIssue, vector <string> cEditors, D
 }
 
 Journal::Journal() {}
-
-Journal& Journal::operator=(const Journal& right) {
-
-}
