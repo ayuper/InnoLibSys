@@ -105,9 +105,6 @@ void try_login() {
 		cout << "Welcome back, " << login << '\n';
 		cout << "Enter password: ";
 		cin >> password;
-		squery = "SELECT * FROM `users` WHERE `name` = '" + login + "' AND `password` = '" + password + "'";
-		sqlite3_prepare(connection_handle, squery.c_str(), -1, &query, 0);
-		rc = sqlite3_step(query);
 		if (login_request(login, password)) {
 			cout << "Incorrect password!\n";
 		}
@@ -122,7 +119,6 @@ void try_login() {
 }
 
 bool login_request(string login, string password) {
-	cin >> password;
 	string squery = "SELECT * FROM `users` WHERE `name` = '" + login + "' AND `password` = '" + password + "'";
 	sqlite3_prepare(connection_handle, squery.c_str(), -1, &query, 0);
 	int rc = sqlite3_step(query);
