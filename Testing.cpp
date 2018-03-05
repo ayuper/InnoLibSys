@@ -6,6 +6,8 @@
 
 using namespace std;
 
+string login, password;
+
 void proceed_command(string command, bool usertype) {
 	if (usertype) {
 		Librarian lb = Librarian();
@@ -79,42 +81,59 @@ void proceed_command(string command, bool usertype) {
 	}
 }
 
+bool check_login_existence(string login) {
+	int rc;
+	string squery = "SELECT * FROM `users` WHERE `name` = '" + login + "'";
+	sqlite3_prepare(connection_handle, squery.c_str(), -1, &query, 0);
+	rc = sqlite3_step(query);
+	return (rc != SQLITE_DONE);
+}
+
+void try_login() {
+	cout << "Welcome to Innopolis University Library System.\n";
+	cout << "Please, sign in using login: ";
+
+	cin >> login;
+
+	char *errMsg = 0;
+	int rc;
+	string squery;
+	if (check_login_existence(login)) {
+		cout << "Login does not exist. Try again\n";
+	}
+	else {
+		cout << "Welcome back, " << login << '\n';
+		cout << "Enter password: ";
+		cin >> password;
+		squery = "SELECT * FROM `users` WHERE `name` = '" + login + "' AND `password` = '" + password + "'";
+		sqlite3_prepare(connection_handle, squery.c_str(), -1, &query, 0);
+		rc = sqlite3_step(query);
+		if (login_request(login, password)) {
+			cout << "Incorrect password!\n";
+		}
+		else {
+			cout << "You has successfully logged in.\n";
+			int is_librarian = sqlite3_column_int(query, COLUMN_ADMIN);
+			librarian = is_librarian;
+			logged_in = true;
+		}
+	}
+	cout << endl;
+}
+
+bool login_request(string login, string password) {
+	cin >> password;
+	string squery = "SELECT * FROM `users` WHERE `name` = '" + login + "' AND `password` = '" + password + "'";
+	sqlite3_prepare(connection_handle, squery.c_str(), -1, &query, 0);
+	int rc = sqlite3_step(query);
+	return (rc != SQLITE_DONE);
+}
+
 int main() {
 	sqlite3_open("library.db", &connection_handle);
 
-	string login, password;
-
 	while (!logged_in) {
-		cout << "Welcome to Innopolis University Library System.\n";
-		cout << "Please, sign in using login: ";
-		cin >> login;
-
-		char *errMsg = 0;
-		int rc;
-		string squery = "SELECT * FROM `users` WHERE `name` = '" + login + "'";
-		sqlite3_prepare(connection_handle, squery.c_str(), -1, &query, 0);
-		rc = sqlite3_step(query);
-		if (rc == SQLITE_DONE) {
-			cout << "Login does not exist. Try again\n";
-		}
-		else {
-			cout << "Welcome back, " << login << '\n';
-			cout << "Enter password: ";
-			cin >> password;
-			squery = "SELECT * FROM `users` WHERE `name` = '" + login + "' AND `password` = '" + password + "'";
-			sqlite3_prepare(connection_handle, squery.c_str(), -1, &query, 0);
-			rc = sqlite3_step(query);
-			if (rc == SQLITE_DONE) {
-				cout << "Incorrect password!\n";
-			}
-			else {
-				cout << "You has successfully logged in.\n";
-				int is_librarian = sqlite3_column_int(query, COLUMN_ADMIN);
-				librarian = is_librarian;
-				logged_in = true;
-			}
-		}
-		cout << endl;
+		try_login();
 	}
 
 	string command;
