@@ -79,6 +79,31 @@ void proceed_command(string command, bool usertype) {
 			lb.add_document(new_document);
 		}
 	}
+	else {
+		Patron p = Patron();
+		if (command == "check_out_document") {
+			string title;
+			cout << "Enter a title: ";
+			cin >> title;
+			string authors;
+			cout << "Enter authors: ";
+			cin >> authors;
+			string publisher;
+			cout << "Enter publisher: ";
+			cin >> publisher;
+			unsigned int year;
+			cout << "Enter a year: ";
+			cin >> year;
+			bool best;
+			cout << "Bestseller? (0 - no, 1 - yes): ";
+			cin >> best;
+			int type;
+			cout << "Supported types: 0 - book, 1 - journal article, 2 - audio-video\n";
+			cout << "Enter a type: ";
+			cin >> type;
+			p.check_out_document(Document(publisher, Date(year, -1, -1), vector <string>(1, authors), title, type, Date(-1, -1, -1)));
+		}
+	}
 }
 
 bool check_login_existence(string login) {
@@ -86,6 +111,13 @@ bool check_login_existence(string login) {
 	string squery = "SELECT * FROM `users` WHERE `name` = '" + login + "'";
 	sqlite3_prepare(connection_handle, squery.c_str(), -1, &query, 0);
 	rc = sqlite3_step(query);
+	return (rc != SQLITE_DONE);
+}
+
+int login_request(string login, string password) {
+	string squery = "SELECT * FROM `users` WHERE `name` = '" + login + "' AND `password` = '" + password + "'";
+	sqlite3_prepare(connection_handle, squery.c_str(), -1, &query, 0);
+	int rc = sqlite3_step(query);
 	return (rc != SQLITE_DONE);
 }
 
@@ -116,13 +148,6 @@ void try_login() {
 		}
 	}
 	cout << endl;
-}
-
-bool login_request(string login, string password) {
-	string squery = "SELECT * FROM `users` WHERE `name` = '" + login + "' AND `password` = '" + password + "'";
-	sqlite3_prepare(connection_handle, squery.c_str(), -1, &query, 0);
-	int rc = sqlite3_step(query);
-	return (rc != SQLITE_DONE);
 }
 
 int main() {
