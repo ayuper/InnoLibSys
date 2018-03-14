@@ -1,0 +1,14 @@
+{% extends 'library\wrapper.html' %}
+
+
+
+{% block content %}
+
+	<form action="" method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<button type="submit">Login</button>
+	</form>	
+	<p>Not a user? <a href="/library/sign-up/">Sign-up</a></p>
+
+{% endblock %}

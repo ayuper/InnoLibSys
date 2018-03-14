@@ -1,0 +1,16 @@
+{% extends 'library\wrapper.html' %}
+
+
+
+{% block content %}
+
+	<h3>Hello, {{ user.username }}!</h3>
+	<p>Your main info: </p>
+	<ul>
+		<li>First name: {{ user.first_name }}</li>
+		<li>Last name: {{ user.last_name }}</li>
+		<li>E-Mail: {{ user.email }}</li>
+	</ul>
+	<a href="/library/logout/">Logout</a>
+
+{% endblock %}
