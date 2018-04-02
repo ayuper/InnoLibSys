@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Profile
+from .models import Profile, Document
 
 class UserForm(forms.ModelForm):
 	class Meta:
@@ -34,3 +34,21 @@ class PatronAddForm(forms.ModelForm):
 		last_name = forms.CharField(label='Last name', max_length=50)
 		password = forms.CharField(label='Password', widget=forms.PasswordInput)
 		fields = ['username', 'first_name', 'last_name', 'password']
+
+class DocumentAddForm(forms.ModelForm):
+	class Meta:
+		type_options = (
+			(0, "Book"),
+			(1, "Article"),
+			(2, "Audio-Video Material"),
+		)
+		model = Document
+		document_type = forms.ChoiceField(
+			widget=forms.Select(choices=type_options),
+			required=True,
+			label='Type')
+		title = forms.CharField(max_length=100)
+		widgets = {
+			'published_date': forms.DateInput(attrs={'class':'datepicker'}),
+		}
+		fields = ['published_date', 'document_type', 'title']

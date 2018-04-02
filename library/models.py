@@ -11,9 +11,17 @@ class Profile(models.Model):
     	return reverse('manage-patron', kwargs={'id':self.id})
 
 class Document(models.Model):
-	document_type = models.IntegerField()
-	published_date = models.DateTimeField()
-	overdue_date = models.DateTimeField()
+	type_options = (
+		(0, "Book"),
+		(1, "Article"),
+		(2, "Audio-Video Material"),
+	)
+	document_type = models.IntegerField(choices=type_options)
+	published_date = models.DateField()
+	overdue_date = models.DateField(null=True)
+	title = models.CharField(max_length=100, default=None)
+	def get_absolute_url(self):
+		return reverse('manage-document', kwargs={'id':self.id})
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):

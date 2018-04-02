@@ -13,4 +13,8 @@ urlpatterns = [
 	path('manage/patrons/<int:id>/delete/', views.patron_delete, name='delete-patron'),
 	path('manage/patrons/add/', views.PatronAddView.as_view(), name='add-patron'),
 	path('manage/documents/', views.ManageDocumentsViews.as_view(), name='manage-documents'),
+	path('manage/documents/<int:id>/', views.document, name='manage-document'),
+	path('manage/documents/<int:id>/edit/', views.document_edit, name='manage-document-edit'),
+	path('manage/documents/<int:id>/delete/', views.document_delete, name='delete-document'),
+	path('manage/documents/add/', views.DocumentAddView.as_view(), name='add-document'),
 ]

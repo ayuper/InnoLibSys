@@ -1,0 +1,16 @@
+{% extends 'library/wrapper.html' %}
+
+{% block content %}
+	<h1>Document list</h1>
+	{% if document_list %}
+		<ul>
+			{% for document in document_list %}
+				<li>
+					<a href="{{ document.get_absolute_url }}">{{ document.title }}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+	{% endif %}
+	<a href="/library/manage/documents/add/">+ Add document</a>
+{% endblock %}
