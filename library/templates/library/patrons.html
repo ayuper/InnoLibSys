@@ -1,0 +1,18 @@
+{% extends 'library/wrapper.html' %}
+
+{% block content %}
+	<h1>Patron list</h1>
+	{% if patron_list %}
+		<ul>
+			{% for patron in patron_list %}
+				{% if not patron.profile.librarian %}
+					<li>
+						<a href="{{ patron.profile.get_absolute_url }}">{{ patron.username }}</a>
+					</li>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	{% else %}
+	{% endif %}
+	<a href="/library/manage/patrons/add/">+ Add patron</a>
+{% endblock %}

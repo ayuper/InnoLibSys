@@ -1,16 +1,19 @@
-{% extends 'library\wrapper.html' %}
-
-
+{% extends 'library/wrapper.html' %}
 
 {% block content %}
 
-	<h3>Hello, {{ user.username }}!</h3>
-	<p>Your main info: </p>
-	<ul>
-		<li>First name: {{ user.first_name }}</li>
-		<li>Last name: {{ user.last_name }}</li>
-		<li>E-Mail: {{ user.email }}</li>
-	</ul>
-	<a href="/library/logout/">Logout</a>
+{% if user.profile.librarian %}<h1>Librarian account</h1>
+{% else %}<h1>Patron account</h1>
+{% endif %}
+<h2>Hello, {{ user.username }}</h2>
+<p><a href='library/logout'>Logout</a></p>
+
+{% if user.profile.librarian %}
+<ul>
+	<a href="library/manage/patrons"><li>Manage patrons</li></a>
+	<a href="library/manage/documents"><li>Manage documents</li></a>
+</ul>
+{% endif %}
+
 
 {% endblock %}

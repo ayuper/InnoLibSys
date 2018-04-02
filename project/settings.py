@@ -20,7 +20,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'l$$hei%ii2cv5zq-3_(@k=74(g19r=t0t@o%^u8bkl$o64w6a)'
+SECRET_KEY = '-7gz*o2fkv!=#6vt_a4c$hjz(ftb4pujee4z0ag&6qk@ii$#$g'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'library',
+    'library'
 ]
 
 MIDDLEWARE = [
@@ -48,7 +48,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'library.middleware.AuthRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'project.urls'
@@ -101,6 +100,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_PROFILE_MODULE = 'library.Profile'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/

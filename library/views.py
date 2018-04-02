@@ -1,74 +1,92 @@
-from django.views.generic.edit import FormView
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.contrib.auth import login, logout
-from django.views.generic.base import View
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
+from django.views.generic import TemplateView, FormView, ListView
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from .forms import UserForm, UserLoginForm, PatronEditForm, PatronAddForm
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+from django.urls import reverse
+from .models import Profile, Document
+from django.http import HttpResponseRedirect
 
-class LogoutView(View):
-    def get(self, request):
-        # Выполняем выход для пользователя, запросившего данное представление.
-        logout(request)
+class IndexView(TemplateView):
+	template_name = 'library/index.html'
 
-        # После чего, перенаправляем пользователя на главную страницу.
-        return HttpResponseRedirect("/library/login/")
+	@method_decorator(login_required(login_url='/library/login/'))
+	def dispatch(self, *args, **kwargs):
+		return super().dispatch(*args, **kwargs)
 
-class RegisterFormView(FormView):
-    form_class = UserCreationForm
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context['user'] = self.request.user
+		return context
 
-    # Ссылка, на которую будет перенаправляться пользователь в случае успешной регистрации.
-    # В данном случае указана ссылка на страницу входа для зарегистрированных пользователей.
-    success_url = "/library/login/"
+class LoginView(FormView):
+	template_name = 'library/login.html'
+	form_class = UserLoginForm
+	success_url = '/'
 
-    # Шаблон, который будет использоваться при отображении представления.
-    template_name = "library/register.html"
+	def form_valid(self, form):
+		data = form.cleaned_data
+		username = data['username']
+		password = data['password']
+		user = authenticate(username=username, password=password)
+		if user is None:
+			return render(self.request, 'library/login.html', {'form':form, 'error':'Invalid login!'})
+		login(self.request, user)
+		return super().form_valid(form)
 
-    def form_valid(self, form):
-        # Создаём пользователя, если данные в форму были введены корректно.
-        form.save()
+class SignupView(FormView):
+	template_name = 'library/signup.html'
+	form_class = UserForm
+	success_url = '/'
 
-        # Вызываем метод базового класса
-        return super(RegisterFormView, self).form_valid(form)
+	def form_valid(self, form):
+		username = self.request.POST['username']
+		password = self.request.POST['password']
+		if User.objects.filter(username=username).exists():
+			return render(self.request, template_name, {'error':'Username already exists!', 'form':form})
+		user = User.objects.create_user(username=username, password=password)
+		login(self.request, user)
+		return super().form_valid(form)
 
-# Функция для установки сессионного ключа.
-# По нему django будет определять, выполнил ли вход пользователь.
+class ManagePatronsViews(ListView):
+	model = User
+	context_object_name = 'patron_list'
+	queryset = User.objects.all()
+	template_name = 'library/patrons.html'
 
-class LoginFormView(FormView):
-    #import pdb; pdb.set_trace()
-    form_class = AuthenticationForm
+class ManageDocumentsViews(ListView):
+	model = Document
+	template_name = 'library/documents.html'
 
-    # Аналогично регистрации, только используем шаблон аутентификации.
-    template_name = "library/login.html"
+def patron(request, id):
+	return render(request, 'library/patron.html', {'user':User.objects.get(id=id)})
 
-    # В случае успеха перенаправим на главную.
-    success_url = "/library/main-page/"
+def patron_edit(request, **kwargs):
+	if request.method == "POST":
+		form = PatronEditForm(data=request.POST, instance=User.objects.get(id=kwargs.get('id')))
+		if form.is_valid():
+			form.save()
+			return HttpResponseRedirect('/library/manage/patrons/')
+	else:
+		form = PatronEditForm()
+	return render(request, 'library/patron_edit.html', {'form':form})
 
-    def form_valid(self, form):
-        # Получаем объект пользователя на основе введённых в форму данных.
-        self.user = form.get_user()
+def patron_delete(request, **kwargs):
+	user = User.objects.get(id=kwargs.get('id'))
+	user.delete()
+	return HttpResponseRedirect('/library/manage/patrons/')
 
-        # Выполняем аутентификацию пользователя.
-        login(self.request, self.user)
-        return super(LoginFormView, self).form_valid(form)
+class PatronAddView(FormView):
+	form_class = PatronAddForm
+	template_name = 'library/add_patron.html'
+	success_url = '/library/manage/patrons/'
 
-class MainPageView(View):
-	def get(self, request):
-		context = {'user':request.user}
-		return render(request, 'library/index.html', context)
-
-def redirect_login(request):
-	if not request.user.is_authenticated:
-		return HttpResponseRedirect("/library/login/")
-	return HttpResponseRedirect("/library/main-page/")
-
-class AuthRequiredMiddleware(object):
-	def __init__(self, get_response):
-		self.get_response = get_response
-
-	def __call__(self, request):
-		return self.get_response(request)
-
-	def process_request(self, request):
-		if not request.user.is_authenticated() and not request.path != '/library/sign-up/':
-			return HttpResponseRedirect("/library/login/") # or http response
-		return None
+	def form_valid(self, form):
+		username = self.request.POST['username']
+		password = self.request.POST['password']
+		first_name = self.request.POST['first_name']
+		last_name = self.request.POST['last_name']
+		user = User.objects.create_user(username=username, password=password, first_name=first_name, last_name=last_name)
+		return super().form_valid(form)

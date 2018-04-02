@@ -1,0 +1,12 @@
+{% extends 'library/wrapper.html' %}
+
+{% block content %}
+	<h1>Patron {{ user.username }}</h1>
+	<ul>
+		<li>Username: {{ user.username }}</li>
+		<li>First name: {{ user.first_name }}</li>
+		<li>Last name: {{ user.last_name }}</li>
+	</ul>
+	<a href="{% url 'manage-patron-edit' user.id %}">Edit patron</a>
+	<a href="{% url 'delete-patron' user.id %}">Delete patron</a>
+{% endblock %}

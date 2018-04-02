@@ -18,7 +18,7 @@ from django.urls import path, include
 from library import views
 
 urlpatterns = [
-	path('admin/', admin.site.urls),
-	path('library/', include('library.urls')),
-	path('', views.redirect_login)
+    path('admin/', admin.site.urls),
+    path('', views.IndexView.as_view()),
+    path('library/', include('library.urls')),
 ]

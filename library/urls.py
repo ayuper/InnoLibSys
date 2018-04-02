@@ -1,11 +1,16 @@
-from django.contrib import admin
 from django.urls import path, include
 from . import views
+from django.contrib.auth.views import logout
 
 urlpatterns = [
-	path('login/', views.LoginFormView.as_view()),
-	path('sign-up/', views.RegisterFormView.as_view()),
-	path('logout/', views.LogoutView.as_view()),
-	path('main-page/', views.MainPageView.as_view()),
-	path('', views.redirect_login)
+	path('login/', views.LoginView.as_view(), name='login'),
+	path('signup/', views.SignupView.as_view(), name='signup'),
+	path('index/', views.IndexView.as_view(), name='index'),
+	path('logout/', logout, {'next_page':'/library/login'}, name='logout'),
+	path('manage/patrons/', views.ManagePatronsViews.as_view(), name='manage-patrons'),
+	path('manage/patrons/<int:id>/', views.patron, name='manage-patron'),
+	path('manage/patrons/<int:id>/edit/', views.patron_edit, name='manage-patron-edit'),
+	path('manage/patrons/<int:id>/delete/', views.patron_delete, name='delete-patron'),
+	path('manage/patrons/add/', views.PatronAddView.as_view(), name='add-patron'),
+	path('manage/documents/', views.ManageDocumentsViews.as_view(), name='manage-documents'),
 ]
