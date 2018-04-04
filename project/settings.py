@@ -100,7 +100,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-AUTH_PROFILE_MODULE = 'library.Profile'
+AUTH_PROFILE_MODULE = 'library.UserProfile'
 
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
@@ -113,6 +113,7 @@ USE_I18N = True
 
 USE_L10N = True
 
+SILENCED_SYSTEM_CHECKS = ['fields.E300', 'fields.E307']
 USE_TZ = True
 
 

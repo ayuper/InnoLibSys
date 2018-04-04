@@ -1,0 +1,16 @@
+{% extends 'library/wrapper.html' %}
+
+{% block content %}
+	<h1>Return requests</h1>
+	{% if return_list %}
+		<ul>
+			{% for rl in return_list %}
+				<li>
+					<a href="{% url 'return-document' rl.id %}">{{ rl.user.username }}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+	{% endif %}
+	<a href="/">Back</a>
+{% endblock %}

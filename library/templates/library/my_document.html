@@ -1,0 +1,20 @@
+{% extends 'library/wrapper.html' %}
+
+{% block content %}
+	<h1>Document {{ document.title }}</h1>
+	<ul>
+		<li>Title: {{ document.title }}</li>
+		<li>Published date: {{ document.published_date }}</li>
+		<li>Overdue date: {{ document.overdue_date }}</li>
+		<li>Type: 
+		{% if document.document_type == 0 %}
+			Book
+		{% elif document.document_type == 1 %}
+			Article
+		{% elif document.document_type == 2 %}
+			Audio-Video Material
+		{% endif %}
+		</li>
+	</ul>
+	<a href="{% url 'document-return' document.id %}">Return document</a>
+{% endblock %}

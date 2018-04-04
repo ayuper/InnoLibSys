@@ -1,17 +1,17 @@
 {% extends 'library/wrapper.html' %}
 
 {% block content %}
-	<h1>Document list</h1>
-	{% if document_list %}
+	<h1>Overdue documents</h1>
+	{% if overdue_documents %}
 		<ul>
-			{% for document in document_list %}
+			{% for document in overdue_documents %}
 				<li>
 					<a href="{{ document.get_absolute_url }}">{{ document.title }}</a>
 				</li>
 			{% endfor %}
 		</ul>
 	{% else %}
+		<p>None</p>
 	{% endif %}
-	<a href="/library/manage/documents/add/">+ Add document</a>
-	<a href="/library/manage/documents/overdue/">Get overdue documents</a>
+	<a href='/'>Back</a>
 {% endblock %}

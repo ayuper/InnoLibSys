@@ -1,0 +1,16 @@
+{% extends 'library/wrapper.html' %}
+
+{% block content %}
+	<h1>Your documents</h1>
+	{% if document_list %}
+		<ul>
+			{% for document in document_list %}
+				<li>
+					<a href="{% url 'my-document' document.id %}">{{ document.title }}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+	{% endif %}
+	<a href="/">Back</a>
+{% endblock %}

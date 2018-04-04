@@ -1,0 +1,17 @@
+{% extends 'library/wrapper.html' %}
+
+{% block content %}
+	<h1>Check out documents</h1>
+	{% if document_list %}
+		<ul>
+			{% for document in document_list %}
+				<li>
+					<a href="{% url 'get-document' document.id %}">{{ document.title }}</a>
+				</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>None</p>
+	{% endif %}
+	<a href="/">Back</a>
+{% endblock %}

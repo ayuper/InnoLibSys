@@ -14,9 +14,18 @@ class UserLoginForm(forms.Form):
 	password = forms.CharField(label='Password', widget=forms.PasswordInput)
 
 class ProfileForm(forms.ModelForm):
-    class Meta:
-        model = Profile
-        fields = ('librarian',)
+	class Meta:
+		type_options = (
+			(0, "Faculty"),
+			(1, "Student"),
+			(2, "Visiting Professor"),
+		)
+		model = Profile
+		patron_type = forms.ChoiceField(
+			widget=forms.Select(choices=type_options),
+			required=True,
+			label='Type') 
+		fields = ['patron_type', 'phone_number', 'adress']
 
 class PatronEditForm(forms.ModelForm):
 	class Meta:
@@ -34,6 +43,20 @@ class PatronAddForm(forms.ModelForm):
 		last_name = forms.CharField(label='Last name', max_length=50)
 		password = forms.CharField(label='Password', widget=forms.PasswordInput)
 		fields = ['username', 'first_name', 'last_name', 'password']
+
+class ProfileAddForm(forms.ModelForm):
+	class Meta:
+		type_options = (
+			(0, "Faculty"),
+			(1, "Student"),
+			(2, "Visiting Professor"),
+		)
+		model = Profile
+		patron_type = forms.ChoiceField(
+			widget=forms.Select(choices=type_options),
+			required=True,
+			label='Type') 
+		fields = ['patron_type', 'phone_number', 'adress']
 
 class DocumentAddForm(forms.ModelForm):
 	class Meta:

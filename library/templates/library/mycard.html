@@ -20,6 +20,5 @@
 		<li>Adress: {{ user.profile.adress }}</li>
 		<li>Fine: {{ user.profile.fine }} RUB</li>
 	</ul>
-	<a href="{% url 'manage-patron-edit' user.id %}">Edit patron</a>
-	<a href="{% url 'delete-patron' user.id %}">Delete patron</a>
+	<a href='/'>Back</a>
 {% endblock %}
