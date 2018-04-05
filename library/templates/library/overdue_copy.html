@@ -1,0 +1,25 @@
+{% extends 'library/wrapper.html' %}
+
+{% block content %}
+	<h1>Document {{ copy.document.title }}</h1>
+	<ul>
+		<li>Title: {{ copy.document.title }}</li>
+		<li>Authors: {{ copy.document.authors }}</li>
+		<li>Published date: {{ copy.document.published_date }}</li>
+		<li>Type: 
+		{% if copy.document.document_type == 0 %}
+			Book
+		{% elif copy.document.document_type == 1 %}
+			Article
+		{% elif copy.document.document_type == 2 %}
+			Audio-Video Material
+		{% endif %}
+		</li>
+		<li>Owned by: {{ copy.user.username }}</li>
+		<li>Price: {{ copy.document.price }}</li>
+		<li>Best seller: {{ copy.document.best_seller }}</li>
+		<li>Overdue date: {{ copy.overdue_date }}
+	</ul>
+	<br>
+	<a href='/'>Back</a>
+{% endblock %}

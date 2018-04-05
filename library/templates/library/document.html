@@ -4,8 +4,8 @@
 	<h1>Document {{ document.title }}</h1>
 	<ul>
 		<li>Title: {{ document.title }}</li>
+		<li>Authors: {{ document.authors }}</li>
 		<li>Published date: {{ document.published_date }}</li>
-		<li>Overdue date: {{ document.overdue_date }}</li>
 		<li>Type: 
 		{% if document.document_type == 0 %}
 			Book
@@ -15,7 +15,13 @@
 			Audio-Video Material
 		{% endif %}
 		</li>
+		<li>Copies: {{ copies }}</li>
+		<li>Price: {{ document.price }}</li>
+		<li>Best seller: {{ document.best_seller }}</li>
 	</ul>
 	<a href="{% url 'manage-document-edit' document.id %}">Edit document</a>
+	<br>
 	<a href="{% url 'delete-document' document.id %}">Delete document</a>
+	<br>
+	<a href="{% url 'checked-patrons' document.id %}">Patrons that checked this document out</a>
 {% endblock %}

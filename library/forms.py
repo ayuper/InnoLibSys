@@ -6,8 +6,6 @@ class UserForm(forms.ModelForm):
 	class Meta:
 		model = User
 		fields = ['username', 'password']
-		username = forms.CharField(label='Username', max_length=20)
-		password = forms.CharField(label='Password', widget=forms.PasswordInput)
 
 class UserLoginForm(forms.Form):
 	username = forms.CharField(label='Username', max_length=20)
@@ -16,9 +14,11 @@ class UserLoginForm(forms.Form):
 class ProfileForm(forms.ModelForm):
 	class Meta:
 		type_options = (
-			(0, "Faculty"),
+			(0, "Instructor (Faculty)"),
 			(1, "Student"),
 			(2, "Visiting Professor"),
+			(3, "TA (Faculty)"),
+			(4, "Professor (Faculty)")
 		)
 		model = Profile
 		patron_type = forms.ChoiceField(
@@ -70,8 +70,9 @@ class DocumentAddForm(forms.ModelForm):
 			widget=forms.Select(choices=type_options),
 			required=True,
 			label='Type')
-		title = forms.CharField(max_length=100)
 		widgets = {
 			'published_date': forms.DateInput(attrs={'class':'datepicker'}),
 		}
-		fields = ['published_date', 'document_type', 'title']
+		fields = ['published_date', 'document_type', 'title', 'authors', 'best_seller']
+	copies = forms.IntegerField()
+	title = forms.CharField(max_length=100)

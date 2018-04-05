@@ -1,0 +1,15 @@
+{% extends 'library/wrapper.html' %}
+
+{% block content %}
+	<h1>Patron checked the document out</h1>
+	{% if checked_patrons %}
+		<ul>
+			{% for patron in checked_patrons %}
+				<li>
+					<p>{{ patron.username }}: {{ overdue_date }}
+				</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+	{% endif %}
+{% endblock %}

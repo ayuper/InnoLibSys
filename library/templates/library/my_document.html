@@ -5,7 +5,7 @@
 	<ul>
 		<li>Title: {{ document.title }}</li>
 		<li>Published date: {{ document.published_date }}</li>
-		<li>Overdue date: {{ document.overdue_date }}</li>
+		<li>Overdue date: {{ copy.overdue_date }}</li>
 		<li>Type: 
 		{% if document.document_type == 0 %}
 			Book
@@ -17,4 +17,5 @@
 		</li>
 	</ul>
 	<a href="{% url 'document-return' document.id %}">Return document</a>
+	<a href="{% url 'renew-document' document.id %}">Renew document</a>
 {% endblock %}

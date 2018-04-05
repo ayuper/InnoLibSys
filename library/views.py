@@ -6,10 +6,11 @@ from .forms import UserForm, UserLoginForm, PatronEditForm, PatronAddForm, Docum
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from .models import Profile, Document, ReturnList
+from .models import Profile, Document, ReturnList, Copy
 from django.http import HttpResponseRedirect
 from django.db.models import Q
 import datetime
+from .functions import check_out_a_book 
 
 class IndexView(TemplateView):
 	template_name = 'library/index.html'
@@ -63,11 +64,7 @@ class ManageDocumentsViews(ListView):
 	template_name = 'library/documents.html'
 	context_object_name = 'document_list'
 	def get_queryset(self):
-		disabled = ReturnList.objects.values_list('document')
-		if disabled.count() == 0:
-			return Document.objects.all()
-		else:
-			return Document.objects.filter(~Q(disabled))
+		return Document.objects.all()
 
 def patron(request, id):
 	print(DocumentAddForm().as_p())
@@ -105,15 +102,16 @@ def patron_add(request):
 				data = profile_form.cleaned_data
 				user.profile.phone_number = data['phone_number']
 				user.profile.adress = data['adress']
+				user.set_password(user_form.cleaned_data['password'])
 				user.save()
 				return HttpResponseRedirect('/library/manage/patrons/')
 	else:
-		user_form = PatronEditForm()
-		profile_form = ProfileForm()
+		user_form = PatronAddForm()
+		profile_form = ProfileAddForm()
 	return render(request, 'library/add_patron.html', {'user_form':user_form, 'profile_form':profile_form})
 
 def document(request, id):
-	return render(request, 'library/document.html', {'document':Document.objects.get(id=id)})
+	return render(request, 'library/document.html', {'document':Document.objects.get(id=id), 'copies':Document.objects.get(id=id).copy_set.count()}) 
 
 class DocumentAddView(FormView):
 	form_class = DocumentAddForm
@@ -124,13 +122,24 @@ class DocumentAddView(FormView):
 		title = self.request.POST['title']
 		published_date = self.request.POST['published_date']
 		document_type = self.request.POST['document_type']
-		document = Document.objects.create(title=title, published_date=published_date, document_type=document_type)
+		authors = self.request.POST['authors']
+		copies = self.request.POST['copies']
+		best_seller = self.request.POST['best_seller']	
+		document = Document.objects.create(title=title, published_date=published_date, document_type=document_type, authors=authors)
+		for i in range(int(copies)):
+			Copy.objects.create(document=document, user=None, overdue_date=None)
+		document.save()
 		return super().form_valid(form)
 
 def document_edit(request, **kwargs):
 	if request.method == "POST":
 		form = DocumentAddForm(data=request.POST, instance=Document.objects.get(id=kwargs.get('id')))
 		if form.is_valid():
+			copies = request.POST['copies']
+			document = Document.objects.get(id=kwargs.get('id'))
+			Copy.objects.filter(document=document).delete()
+			for i in range(int(copies)):
+				Copy.objects.create(document=document, user=None, overdue_date=None)
 			form.save()
 			return HttpResponseRedirect('/library/manage/documents/')
 	else:
@@ -139,60 +148,104 @@ def document_edit(request, **kwargs):
 
 def document_delete(request, **kwargs):
 	document = Document.objects.get(id=kwargs.get('id'))
+	Copy.objects.filter(document=document).delete()
 	document.delete()
 	return HttpResponseRedirect('/library/manage/documents/')
 
 class DocumentsView(ListView):
-	model = Document
+	model = Copy
 	template_name = 'library/my_documents.html'
 	context_object_name = 'document_list'
 	def get_queryset(self):
-		return Document.objects.filter(user=self.request.user)
+		return_list = ReturnList.objects.filter(user=self.request.user)
+		print(Copy.objects.filter(Q(user=self.request.user)))
+		return Copy.objects.filter(Q(user=self.request.user) & ~Q(document__id__in=[d.document.id for d in return_list])) # check
 
 def my_document(request, id):
-	return render(request, 'library/my_document.html', {'document':Document.objects.get(id=id)})
+	return render(request, 'library/my_document.html', {'document':Document.objects.get(id=id), 'copy':Copy.objects.get(user=request.user,document=Document.objects.get(id=id))}) # check
 
 def document_return(request, **kwargs):
 	document = Document.objects.get(id=kwargs.get('id'))
 	return_list = ReturnList.objects.create(user=request.user, document=document)
-	document.user = None
-	document.to_return = True
-	document.save()
-	return HttpResponseRedirect('/library/documents/')
+	return HttpResponseRedirect('/library/documents/') # check
 
 class DocumentsCheckOutView(ListView):
 	model = Document
 	template_name = 'library/check_out.html'
 	context_object_name = 'document_list'
 	def get_queryset(self):
-		return Document.objects.filter(~Q(user=self.request.user) & Q(to_return=False))
+		return_list = ReturnList.objects.filter(user=self.request.user)
+		owned_copies_docs = Copy.objects.filter(user=self.request.user)
+		print(owned_copies_docs)
+		return Document.objects.all().filter(~Q(id__in=[d.document.id for d in owned_copies_docs]) & ~Q(id__in=[d.document.id for d in return_list]))
 
 def document_check_out(request, **kwargs):
 	document = Document.objects.get(id=kwargs.get('id'))
-	document.user = request.user
-	document.save()
-	return HttpResponseRedirect('/')
+	check_out_a_book(request.user, document, datetime.date.today())
+	return HttpResponseRedirect('/') # check
 
 class DocumentsReturnView(ListView):
 	model = ReturnList
-	template_name = 'library/return_list.html'
+	template_name = 'library/return_list.html' # check the template
 	context_object_name = 'return_list'
 	queryset = ReturnList.objects.all()
 
 def document_lreturn(request, **kwargs):
 	__request = ReturnList.objects.get(id=kwargs.get('id'))
 	document = __request.document
+	cp = Copy.objects.get(document=document, user=__request.user)
 	__request.delete()
-	document.to_return = False
-	document.save()
-	return HttpResponseRedirect('/library/manage/return/')
+	cp.user = None
+	cp.save()
+	return HttpResponseRedirect('/library/manage/return/') # check
 
 class OverdueDocumentsView(ListView):
-	model = Document
+	model = Copy
 	template_name = 'library/overdue_documents.html'
 	context_object_name = 'overdue_documents'
 	def get_queryset(self):
-		return Document.objects.filter(~Q(overdue_date=None) & Q(overdue_date__lte=datetime.date.today()))
+		return Copy.objects.filter(~Q(overdue_date=None) & Q(overdue_date__lte=datetime.date.today()))
 
 def mycard(request):
+	overdue_documents = Copy.objects.filter(~Q(overdue_date=None) & Q(overdue_date__lte=datetime.date.today()) & Q(user=request.user))
+	current_fine = 0
+	for i in range(overdue_documents.count()):
+		current_fine += min((overdue_documents[i].overdue_date-datetime.date.today()).days*100, overdue_documents[i].document.price)
+	request.user.profile.fine = current_fine
+	request.user.save()
 	return render(request, 'library/mycard.html', {'user':request.user})
+
+class PatronsCheckedView(ListView):
+	model = User
+	template_name = 'library/checked_patrons.html'
+	context_object_name = 'checked_patrons'
+	def get_queryset(self):
+		return User.objects.filter(copy__in=Copy.objects.filter(Q(document=Document.objects.filter(id=self.kwargs.get('id'))) & ~Q(user=None)))
+	def get_context_data(self, **kwargs):
+		data = super().get_context_data(**kwargs)
+		data['overdue_date'] = Copy.objects.filter(Q(document=Document.objects.filter(id=self.kwargs.get('id'))) & ~Q(user=None)).values_list('overdue_date')
+		return data #check
+
+def overdue_copy(request, **kwargs):
+	cp = Copy.objects.get(id=kwargs.get('id'))
+	return render(request, 'library/overdue_copy.html', {'copy':cp})
+
+def document_renew(request, **kwargs):
+	document = Document.objects.get(id=kwargs.get('id'))
+	copy = Copy.objects.get(document=document, user=request.user)
+	user = request.user
+	if not copy.renewed:
+		if user.profile.patron_type == 0 or user.profile.patron_type == 3 or user.profile.patron_type == 4:
+			copy.overdue_date += datetime.timedelta(days=28)
+		elif user.profile.patron_type == 1:
+			if document.best_seller:
+				copy.overdue_date += datetime.timedelta(days=14)
+			else:
+				copy.overdue_date += datetime.timedelta(days=21)
+		elif user.profile.patron_type == 2:
+			copy.overdue_date += datetime.timedelta(days=7)
+		copy.renewed = True
+		copy.save()
+		return render(request, 'library/my_document.html', {'document':Document.objects.get(id=kwargs.get('id')), 'copy':Copy.objects.get(user=request.user,document=Document.objects.get(id=kwargs.get('id')))})
+	else:
+		return render(request, 'library/my_document.html', {'document':Document.objects.get(id=kwargs.get('id')), 'copy':Copy.objects.get(user=request.user,document=Document.objects.get(id=kwargs.get('id'))), 'error':'You have already renewed this item.'})

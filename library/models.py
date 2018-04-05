@@ -12,9 +12,7 @@ class Document(models.Model):
 	)
 	document_type = models.IntegerField(choices=type_options)
 	published_date = models.DateField()
-	overdue_date = models.DateField(null=True)
 	title = models.CharField(max_length=100, default=None)
-	user = models.ForeignKey(User, related_name='documents', on_delete=models.CASCADE, null=True)
 	to_return = models.BooleanField(default=False)
 	best_seller = models.BooleanField(default=False)
 	authors = models.CharField(max_length=200,default=None, null=True)
@@ -22,15 +20,23 @@ class Document(models.Model):
 	def get_absolute_url(self):
 		return reverse('manage-document', kwargs={'id':self.id})
 
+class Copy(models.Model):
+	overdue_date = models.DateField(null=True)
+	user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+	document = models.ForeignKey(Document, on_delete=models.CASCADE)
+	renewed = models.BooleanField(default=False)
+
 class ReturnList(models.Model):
 	document = models.OneToOneField(Document, on_delete=models.CASCADE)
-	user = models.OneToOneField(User, on_delete=models.CASCADE)
+	user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
 class Profile(models.Model):
 	type_options = (
-		(0, "Faculty"),
+		(0, "Instructor (Faculty)"),
 		(1, "Student"),
 		(2, "Visiting Professor"),
+		(3, "TA (Faculty)"),
+		(4, "Professor (Faculty)")
 	)
 	patron_type = models.IntegerField(choices=type_options, default=0)
 	user = models.OneToOneField(User, on_delete=models.CASCADE)

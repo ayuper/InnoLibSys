@@ -5,8 +5,12 @@
 <div style="width: 340px; margin: auto; margin-top:10%; background-color: #fff; padding: 20px;border-radius: 10px;">
 	<form method="post">
 		{% csrf_token %}
-		{{ form.as_p }}
-		<input type="submit" />
+		{% bootstrap_form form %}
+  		{% buttons %}
+			<button type="submit" class="btn btn-primary">
+		    	{% bootstrap_icon "star" %} Submit
+		    </button>
+		{% endbuttons %}
 	</form>
 	<p>Not a user? <a href='/library/signup/'>Sign up!</a></p>
 	{% if error %}<p>{{ error }}</p>{% endif %}

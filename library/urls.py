@@ -25,5 +25,8 @@ urlpatterns = [
 	path('manage/return/', views.DocumentsReturnView.as_view(), name='return-documents'),
 	path('manage/return/<int:id>/', views.document_lreturn, name='return-document'),
 	path('manage/documents/overdue/', views.OverdueDocumentsView.as_view(), name='overdue-documents'),
+	path('manage/documents/overdue/<int:id>/', views.overdue_copy, name='overdue-copy'),
 	path('mycard/', views.mycard, name='my-card'),
+	path('manage/documents/<int:id>/checked/', views.PatronsCheckedView.as_view(), name='checked-patrons'),
+	path('documents/<int:id>/renew/', views.document_renew, name='renew-document')
 ]

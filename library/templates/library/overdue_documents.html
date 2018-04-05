@@ -6,7 +6,7 @@
 		<ul>
 			{% for document in overdue_documents %}
 				<li>
-					<a href="{{ document.get_absolute_url }}">{{ document.title }}</a>
+					<p>Copy of a <a href="{{ url 'overdued-copy' document.id }}">{{ document.document.title }}</a> owned by Patron {{ document.document.user.username }}</p>
 				</li>
 			{% endfor %}
 		</ul>

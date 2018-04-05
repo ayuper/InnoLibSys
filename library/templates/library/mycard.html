@@ -9,11 +9,15 @@
 		<li>Last name: {{ user.last_name }}</li>
 		<li>Type: 
 		{% if user.profile.patron_type == 0 %}
-		Faculty
+		Instructor
 		{% elif user.profile.patron_type == 1 %}
 		Student
 		{% elif user.profile.patron_type == 2 %}
 		Visiting Professor
+		{% elif user.profile.patron_type == 3 %}
+		TA
+		{% elif user.profile.patron_type == 2 %}
+		Professor
 		{% endif %}
 		</li>
 		<li>Phone number: {{ user.profile.phone_number }}</li>
