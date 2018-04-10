@@ -1,4 +1,5 @@
 {% extends 'library/wrapper.html' %}
+{% load bootstrap3 %}
 
 {% block content %}
 	<h1>Document {{ document.title }}</h1>
@@ -24,4 +25,6 @@
 	<a href="{% url 'delete-document' document.id %}">Delete document</a>
 	<br>
 	<a href="{% url 'checked-patrons' document.id %}">Patrons that checked this document out</a>
+	<br>
+	<a href="{% url 'get-queue' document.id %}">Show queue for this document</a>
 {% endblock %}

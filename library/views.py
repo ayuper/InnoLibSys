@@ -10,7 +10,7 @@ from .models import Profile, Document, ReturnList, Copy
 from django.http import HttpResponseRedirect
 from django.db.models import Q
 import datetime
-from .functions import check_out_a_book 
+from .functions import *
 
 class IndexView(TemplateView):
 	template_name = 'library/index.html'
@@ -59,6 +59,10 @@ class ManagePatronsViews(ListView):
 	queryset = User.objects.all()
 	template_name = 'library/patrons.html'
 
+def queue_view(request, **kwargs):
+	queue = get_priority_queue(Document.objects.get(id=kwargs.get('id')))
+	return render(request, 'library/queue.html', {'queue':queue})
+
 class ManageDocumentsViews(ListView):
 	model = Document
 	template_name = 'library/documents.html'
@@ -79,6 +83,7 @@ def patron_edit(request, **kwargs):
 				data = profile_form.cleaned_data
 				user.profile.phone_number = data['phone_number']
 				user.profile.adress = data['adress']
+				user.profile.patron_type = data['patron_type']
 				user.save()
 				return HttpResponseRedirect('/library/manage/patrons/')
 	else:

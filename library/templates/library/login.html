@@ -1,4 +1,5 @@
 {% extends 'library/wrapper.html' %}
+{% load bootstrap3 %}
 
 {% block content %}
 
@@ -15,5 +16,4 @@
 	<p>Not a user? <a href='/library/signup/'>Sign up!</a></p>
 	{% if error %}<p>{{ error }}</p>{% endif %}
 </div>
-
 {% endblock %}

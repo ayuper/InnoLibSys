@@ -1,0 +1,17 @@
+{% extends 'library/wrapper.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+	<h1>Users awaiting:</h1>
+	{% if queue %}
+		<ol>
+			{% for user in queue %}
+				<li>
+					<a href="{{ user.1.profile.get_absolute_url }}">{{ user.1.username }}</a>
+				</li>
+			{% endfor %}
+		</ol>
+	{% else %}
+	{% endif %}
+	<a href="/">Back</a>
+{% endblock %}

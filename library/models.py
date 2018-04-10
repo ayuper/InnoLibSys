@@ -20,6 +20,10 @@ class Document(models.Model):
 	def get_absolute_url(self):
 		return reverse('manage-document', kwargs={'id':self.id})
 
+class DocumentQueue(models.Model):
+	document = models.OneToOneField(Document, on_delete=models.CASCADE)
+	users = models.ManyToManyField(User)
+
 class Copy(models.Model):
 	overdue_date = models.DateField(null=True)
 	user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)

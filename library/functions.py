@@ -6,10 +6,11 @@ from .forms import UserForm, UserLoginForm, PatronEditForm, PatronAddForm, Docum
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from .models import Profile, Document, ReturnList, Copy
+from .models import Profile, Document, ReturnList, Copy, DocumentQueue
 from django.http import HttpResponseRedirect
 from django.db.models import Q
 import datetime
+import operator
 
 def check_out_a_book(user, document, date):
 	available_copies = Copy.objects.filter(document=document, user=None).count()
@@ -29,6 +30,28 @@ def check_out_a_book(user, document, date):
 			copy.overdue_date = date + datetime.timedelta(days=7)
 		copy.user = user
 		copy.save()
+	else:
+		queue = DocumentQueue()
+		if not DocumentQueue.objects.filter(document=document).exists():
+			queue = DocumentQueue.objects.create(document=document)
+			queue.users.add(user)
+		else:
+			queue = DocumentQueue.objects.get(document=document)
+			if not DocumentQueue.objects.filter(users__in=[user]).count():
+				queue.users.add(user)
+		queue.save()
+
+def get_priority_queue(document):
+	result = []
+	if DocumentQueue.objects.filter(document=document).exists():
+		queue = DocumentQueue.objects.get(document=document)
+		result = []
+		priorities = [1, 0, 3, 2, 4]
+		for user in queue.users.all():
+			print(user.username)
+			result.append((priorities[user.profile.patron_type], user))
+		result.sort(key=operator.itemgetter(0))
+	return result
 
 def return_book(user, document):
 	return_list = ReturnList.objects.create(user=user, document=document)
@@ -42,10 +65,6 @@ def check_dues(user):
 	user_copies = Copy.objects.filter(user=user)
 	answer = []
 	for i in range (user_copies.count()):
-		#print(user.username)
-		#print(user.profile.patron_type)
-		#print(user_copies[i].overdue_date)
-		#print(datetime.date.today())
 		answer.append((user_copies[i].document, max(0, get_dues(user_copies[i].overdue_date, datetime.date.today()))))
 	return answer
 
