@@ -22,3 +22,6 @@ urlpatterns = [
     path('', views.IndexView.as_view()),
     path('library/', include('library.urls')),
 ]
+
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+urlpatterns += staticfiles_urlpatterns()
