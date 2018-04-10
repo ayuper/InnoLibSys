@@ -78,3 +78,28 @@ def get_info(user):
 	for i in range(copies.count()):
 		answer.append((copies[i].document, copies[i].overdue_date))
 	return answer
+
+def edit_document(document, data):
+	copies = data['copies']
+	Copy.objects.filter(document=document).delete()
+	for i in range(int(copies)):
+		Copy.objects.create(document=document, user=None, overdue_date=None)
+
+def delete_document(document):
+	Copy.objects.filter(document=document).delete()
+	document.delete()
+
+def librarian_accept_return(__request):
+	document = __request.document
+	cp = Copy.objects.get(document=document, user=__request.user)
+	__request.delete()
+	cp.user = None
+	cp.save()
+
+def update_fines(user):
+	overdue_documents = Copy.objects.filter(~Q(overdue_date=None) & Q(overdue_date__lte=datetime.date.today()) & Q(user=user))
+	current_fine = 0
+	for i in range(overdue_documents.count()):
+		current_fine += min((overdue_documents[i].overdue_date-datetime.date.today()).days*100, overdue_documents[i].document.price)
+	user.profile.fine = current_fine
+	user.save()
