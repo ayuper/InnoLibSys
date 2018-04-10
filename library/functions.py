@@ -6,7 +6,7 @@ from .forms import UserForm, UserLoginForm, PatronEditForm, PatronAddForm, Docum
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from .models import Profile, Document, ReturnList, Copy, DocumentQueue
+from .models import *
 from django.http import HttpResponseRedirect
 from django.db.models import Q
 import datetime
@@ -122,3 +122,15 @@ def update_fines(user):
 		current_fine += min((overdue_documents[i].overdue_date-datetime.date.today()).days*100, overdue_documents[i].document.price)
 	user.profile.fine = current_fine
 	user.save()
+
+def add_copies(document, amount):
+	available_copies = Copy.objects.filter(document=document, user=None).count()
+	if not available_copies:
+		queue = get_priority_queue(document)
+		if queue is not None:
+			first_user = queue[0][1]
+			date = datetime.date.today()
+			message = "There's a new copy of document \"" + document.title + "\" and you can check it out."
+			Notifications.objects.create(user=first_user, message=message, date=date, new_copy=True)
+	for i in range(amount):
+		Copy.objects.create(document=document, user=None)

@@ -27,6 +27,8 @@ class DocumentQueue(models.Model):
 class Notifications(models.Model):
 	user = models.OneToOneField(User, on_delete=models.CASCADE)
 	message = models.CharField(max_length=500, default=None, null=True)
+	date = models.DateField(default=None, null=True)
+	new_copy = models.BooleanField(default=False)
 
 class Copy(models.Model):
 	overdue_date = models.DateField(null=True)

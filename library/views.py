@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, FormView, ListView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from .forms import UserForm, UserLoginForm, PatronEditForm, PatronAddForm, DocumentAddForm, ProfileForm, ProfileAddForm
+from .forms import UserForm, UserLoginForm, PatronEditForm, PatronAddForm, DocumentAddForm, ProfileForm, ProfileAddForm, AddCopiesForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
@@ -22,6 +22,8 @@ class IndexView(TemplateView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context['user'] = self.request.user
+		print(Notifications.objects.filter(user=self.request.user))
+		context['notifications'] = Notifications.objects.filter(user=self.request.user)
 		return context
 
 class LoginView(FormView):
@@ -223,3 +225,13 @@ def document_renew(request, **kwargs):
 		return render(request, 'library/my_document.html', {'document':Document.objects.get(id=kwargs.get('id')), 'copy':Copy.objects.get(user=request.user,document=Document.objects.get(id=kwargs.get('id')))})
 	else:
 		return render(request, 'library/my_document.html', {'document':Document.objects.get(id=kwargs.get('id')), 'copy':Copy.objects.get(user=request.user,document=Document.objects.get(id=kwargs.get('id'))), 'error':'You have already renewed this item.'})
+
+def add_copies_view(request, **kwargs):
+	if request.method == "POST":
+		form = AddCopiesForm(data=request.POST)
+		if form.is_valid():
+			add_copies(Document.objects.get(id=kwargs.get('id')), int(request.POST['amount']))
+			return HttpResponseRedirect('/library/manage/documents/')
+	else:
+		form = AddCopiesForm()
+	return render(request, 'library/add_copies.html', {'form':form})

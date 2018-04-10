@@ -76,3 +76,6 @@ class DocumentAddForm(forms.ModelForm):
 		fields = ['published_date', 'document_type', 'title', 'authors', 'best_seller']
 	copies = forms.IntegerField()
 	title = forms.CharField(max_length=100)
+
+class AddCopiesForm(forms.Form):
+	amount = forms.IntegerField()

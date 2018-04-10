@@ -30,4 +30,5 @@ urlpatterns = [
 	path('manage/documents/<int:id>/checked/', views.PatronsCheckedView.as_view(), name='checked-patrons'),
 	path('documents/<int:id>/renew/', views.document_renew, name='renew-document'),
 	path('manage/documents/<int:id>/queue/', views.queue_view, name='get-queue'),
+	path('manage/documents/<int:id>/add-copies/', views.add_copies_view, name='add-copies')
 ]

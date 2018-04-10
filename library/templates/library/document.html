@@ -27,4 +27,6 @@
 	<a href="{% url 'checked-patrons' document.id %}">Patrons that checked this document out</a>
 	<br>
 	<a href="{% url 'get-queue' document.id %}">Show queue for this document</a>
+	<br>
+	<a href="{% url 'add-copies' document.id %}">Add copies</a>
 {% endblock %}
