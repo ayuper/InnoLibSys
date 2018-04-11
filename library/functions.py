@@ -131,6 +131,28 @@ def add_copies(document, amount):
 			first_user = queue[0][1]
 			date = datetime.date.today()
 			message = "There's a new copy of document \"" + document.title + "\" and you can check it out."
-			Notifications.objects.create(user=first_user, message=message, date=date, new_copy=True)
+			notify(first_user, Notifications(message=message, date=date, new_copy=True))
 	for i in range(amount):
 		Copy.objects.create(document=document, user=None)
+
+def notify(user, notification):
+	Notifications.objects.create(user=user, message=notification.message, date=notification.date, new_copy=notification.new_copy)
+
+def outstanding_request(document):
+	if not document.outstanding_request:
+		document.outstanding_request = True
+		document.save()
+		owned_copies = Copy.objects.filter(Q(document=document) & ~Q(user=None))
+		for copy in owned_copies:
+			owner = copy.user
+			date = datetime.date.today()
+			message = "Librarian made an outstanding request for document \"" + document.title + "\", you must return it back as soon as possible!"
+			notify(owner, Notifications(message=message, date=date, new_copy=False))
+		queue = get_priority_queue(document)
+		if queue is not None:
+			for user in queue:
+				date = datetime.date.today()
+				message = "You have left the queue for document \"" + document.title + "\" due to an outstanding request."
+				notify(user[1], Notifications(message=message, date=date, new_copy=False))
+			DocumentQueue.objects.get(document=document).delete()
+

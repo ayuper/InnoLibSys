@@ -17,6 +17,7 @@ class Document(models.Model):
 	best_seller = models.BooleanField(default=False)
 	authors = models.CharField(max_length=200,default=None, null=True)
 	price = models.IntegerField(default=0)
+	outstanding_request = models.BooleanField(default=False)
 	def get_absolute_url(self):
 		return reverse('manage-document', kwargs={'id':self.id})
 
@@ -25,7 +26,7 @@ class DocumentQueue(models.Model):
 	users = models.ManyToManyField(User)
 
 class Notifications(models.Model):
-	user = models.OneToOneField(User, on_delete=models.CASCADE)
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
 	message = models.CharField(max_length=500, default=None, null=True)
 	date = models.DateField(default=None, null=True)
 	new_copy = models.BooleanField(default=False)

@@ -235,3 +235,7 @@ def add_copies_view(request, **kwargs):
 	else:
 		form = AddCopiesForm()
 	return render(request, 'library/add_copies.html', {'form':form})
+
+def outstanding_request_view(request, **kwargs):
+	outstanding_request(Document.objects.get(id=kwargs.get('id')))
+	return HttpResponseRedirect('/library/manage/documents/')

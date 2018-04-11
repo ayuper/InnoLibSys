@@ -29,4 +29,6 @@
 	<a href="{% url 'get-queue' document.id %}">Show queue for this document</a>
 	<br>
 	<a href="{% url 'add-copies' document.id %}">Add copies</a>
+	<br>
+	<a href="{% url 'outstanding-request' document.id %}">Make an outstanding request</a>
 {% endblock %}
