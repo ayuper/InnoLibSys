@@ -32,4 +32,10 @@ urlpatterns = [
 	path('manage/documents/<int:id>/queue/', views.queue_view, name='get-queue'),
 	path('manage/documents/<int:id>/add-copies/', views.add_copies_view, name='add-copies'),
 	path('manage/documents/<int:id>/outstanding-request/', views.outstanding_request_view, name='outstanding-request'),
+	path('manage/librarians/', views.ManageLibrariansView.as_view(), name='manage-librarians'),
+	path('manage/librarians/<int:id>/', views.librarian, name='manage-librarian'),
+	path('manage/logs/', views.LogView.as_view(), name='logs'),
+	path('manage/librarians/<int:id>/edit/', views.librarian_edit, name='manage-librarian-edit'),
+	path('manage/librarians/<int:id>/delete/', views.librarian_delete, name='delete-librarian'),
+	path('search/', views.search, name='search'),
 ]

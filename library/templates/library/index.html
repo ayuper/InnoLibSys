@@ -10,7 +10,8 @@
 	<div class="container" style="border-color: #FFFFFF">
 	<div class="container" style="padding-top: 10%">
 	<div class="row" style="background-color: #7aff59; border-radius: 10px 10px 0px 0px">
-		<div class="col-md-6" style="font-style: italic; padding-left: 10%; padding-top: 10px; padding-bottom: 10px"> {% if user.profile.librarian %}<h1>Librarian account</h1>
+		<div class="col-md-6" style="font-style: italic; padding-left: 10%; padding-top: 10px; padding-bottom: 10px"> {% if user.profile.admin %}<h1>Admin account</h1>
+		{% elif user.profile.librarian %}<h1>Librarian account</h1>
 		{% else %}<h1>Patron account</h1>
 		{% endif %}
 		<h2>Hello, {{ user.username }}</h2>
@@ -25,7 +26,11 @@
 <div class="container" style="background-color: #ebebeb; border-radius: 0px 0px 10px 10px; width: 1110px; padding-top: 50px">
 
 <div style="padding: 10%; padding-top: 5%">
-{% if user.profile.librarian %}
+
+{% if user.profile.admin %}
+	<a href="library/manage/librarians/"><p class="lead"><strong>Manage librarians</strong></p></a>
+	<a href="library/manage/logs/"><p class="lead"><strong>Logs</strong></p></a>
+{% elif user.profile.librarian %}
 	<a href="library/manage/patrons"><p class="lead"><strong>Manage patrons</strong></p></a>
 	<a href="library/manage/documents"><p class="lead"><strong>Manage documents</strong></p></a>
 	<a href="library/manage/return/"><p class="lead"><strong>Return requests</strong></p></a>
@@ -33,10 +38,10 @@
 
     <a href="library/documents"><p class="lead"><strong>My documents</strong></p></a>
 	<a href="library/documents/check-out"><p class="lead"><strong>Check out documents</strong></p></a>
+	<a href="library/search/"><p class="lead"><strong>Search!</strong></p></a>
 
 	<button id="myBtn" class="btn btn-lg btn-info">Notifications</button>
 	<div id="myModal" class="modal">
-
 	  <!-- Modal content -->
 	  <div class="modal-content">
 	  	<div class="modal-header">

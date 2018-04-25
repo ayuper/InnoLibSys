@@ -1,0 +1,19 @@
+{% extends 'library/wrapper.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+	<h1>Librarian {{ user.username }}</h1>
+	<ul>
+		<li>User card ID: {{ user.id }}</li>
+		<li>Username: {{ user.username }}</li>
+		<li>First name: {{ user.first_name }}</li>
+		<li>Last name: {{ user.last_name }}</li>
+		<li>Phone number: {{ user.profile.phone_number }}</li>
+		<li>Adress: {{ user.profile.adress }}</li>
+		<li>Priv1: {{ user.profile.priv1 }}</li>
+		<li>Priv2: {{ user.profile.priv2 }}</li>
+		<li>Priv3: {{ user.profile.priv3 }}</li>
+	</ul>
+	<a href="{% url 'manage-librarian-edit' user.id %}">Edit librarian</a>
+	<a href="{% url 'delete-librarian' user.id %}">Delete librarian</a>
+{% endblock %}

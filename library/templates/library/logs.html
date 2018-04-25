@@ -1,0 +1,18 @@
+{% extends 'library/wrapper.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+	<h1>Logs</h1>
+	{% if logs %}
+		<ul>
+			{% for log in logs %}
+					<p><strong>
+						{{ log.date }}, {{ log.user.username }}
+					</p></strong>
+					<p>{{ log.message }}</p>
+			{% endfor %}
+		</ul>
+	{% else %}
+	<p>None</p>
+	{% endif %}
+{% endblock %}

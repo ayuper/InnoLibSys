@@ -18,6 +18,7 @@ class Document(models.Model):
 	authors = models.CharField(max_length=200,default=None, null=True)
 	price = models.IntegerField(default=0)
 	outstanding_request = models.BooleanField(default=False)
+	keywords = models.CharField(max_length=200, default=None, null=True)
 	def get_absolute_url(self):
 		return reverse('manage-document', kwargs={'id':self.id})
 
@@ -30,6 +31,11 @@ class Notifications(models.Model):
 	message = models.CharField(max_length=500, default=None, null=True)
 	date = models.DateField(default=None, null=True)
 	new_copy = models.BooleanField(default=False)
+
+class Log(models.Model):
+	user = models.ForeignKey(User, on_delete=models.CASCADE)
+	message = models.CharField(max_length=500, default=None, null=True)
+	date = models.DateField(default=None, null=True)
 
 class Copy(models.Model):
 	overdue_date = models.DateField(null=True)
@@ -55,6 +61,10 @@ class Profile(models.Model):
 	phone_number = models.CharField(max_length=20, default=None, null=True)
 	adress = models.CharField(max_length=50, default=None, null=True)
 	fine = models.IntegerField(default=0)
+	admin = models.BooleanField(default=False)
+	priv1 = models.BooleanField(default=False)
+	priv2 = models.BooleanField(default=False)
+	priv3 = models.BooleanField(default=False)
 	def get_absolute_url(self):
 		return reverse('manage-patron', kwargs={'id':self.id})
 

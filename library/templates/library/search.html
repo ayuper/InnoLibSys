@@ -1,0 +1,18 @@
+{% extends 'library/wrapper.html' %}
+{% load bootstrap3 %}
+
+{% block content %}
+	<h1>Search results</h1>
+	{% if search_list %}
+		<ul>
+			{% for doc in search_list %}
+					<li>
+						<a href="{% url 'get-document' doc.id %}">{{ doc.title }}</a>
+					</li>
+			{% endfor %}
+		</ul>
+	{% else %}
+		<p>None</p>
+	{% endif %}
+	<a href="/">Back</a>
+{% endblock %}

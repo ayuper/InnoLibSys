@@ -27,6 +27,11 @@ class ProfileForm(forms.ModelForm):
 			label='Type') 
 		fields = ['patron_type', 'phone_number', 'adress']
 
+class LibrarianForm(forms.ModelForm):
+	class Meta:
+		model = Profile 
+		fields = ['phone_number', 'adress']
+
 class PatronEditForm(forms.ModelForm):
 	class Meta:
 		model = User
@@ -73,9 +78,21 @@ class DocumentAddForm(forms.ModelForm):
 		widgets = {
 			'published_date': forms.DateInput(attrs={'class':'datepicker'}),
 		}
-		fields = ['published_date', 'document_type', 'title', 'authors', 'best_seller']
+		fields = ['keywords', 'published_date', 'document_type', 'title', 'authors', 'best_seller']
 	copies = forms.IntegerField()
 	title = forms.CharField(max_length=100)
+
+class SearchForm(forms.Form):
+	query = forms.CharField(max_length=200)
+	type_options = (
+		(0, "Keyword search"),
+		(1, "Title search"),
+	)
+	search_type = forms.ChoiceField(
+		choices=type_options,
+		required=True,
+		label='Type'
+	)
 
 class AddCopiesForm(forms.Form):
 	amount = forms.IntegerField()

@@ -20,15 +20,25 @@
 		<li>Price: {{ document.price }}</li>
 		<li>Best seller: {{ document.best_seller }}</li>
 	</ul>
-	<a href="{% url 'manage-document-edit' document.id %}">Edit document</a>
-	<br>
-	<a href="{% url 'delete-document' document.id %}">Delete document</a>
-	<br>
-	<a href="{% url 'checked-patrons' document.id %}">Patrons that checked this document out</a>
-	<br>
-	<a href="{% url 'get-queue' document.id %}">Show queue for this document</a>
-	<br>
-	<a href="{% url 'add-copies' document.id %}">Add copies</a>
-	<br>
-	<a href="{% url 'outstanding-request' document.id %}">Make an outstanding request</a>
+	{% if user.profile.priv1 %}
+	
+	{% endif %}
+	{% if user.profile.priv2 %}
+		<a href="{% url 'outstanding-request' document.id %}">Make an outstanding request</a>
+		<br>
+		<a href="{% url 'delete-document' document.id %}">Delete document</a>
+		<br>
+		<a href="{% url 'checked-patrons' document.id %}">Patrons that checked this document out</a>
+		<br>
+		<a href="{% url 'get-queue' document.id %}">Show queue for this document</a>
+		<br>
+	{% endif %}
+	{% if user.profile.priv3 %}
+		<a href="{% url 'add-copies' document.id %}">Add copies</a>
+		<br>
+		<a href="{% url 'manage-document-edit' document.id %}">Edit document</a>
+		<br>
+	{% endif %}
+	
+	
 {% endblock %}

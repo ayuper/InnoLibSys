@@ -2,11 +2,11 @@ from django.shortcuts import render
 from django.views.generic import TemplateView, FormView, ListView
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from .forms import UserForm, UserLoginForm, PatronEditForm, PatronAddForm, DocumentAddForm, ProfileForm, ProfileAddForm, AddCopiesForm
+from .forms import *
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.urls import reverse
-from .models import Profile, Document, ReturnList, Copy
+from .models import *
 from django.http import HttpResponseRedirect
 from django.db.models import Q
 import datetime
@@ -73,7 +73,7 @@ class ManageDocumentsViews(ListView):
 		return Document.objects.all()
 
 def patron(request, id):
-	return render(request, 'library/patron.html', {'user':User.objects.get(id=id)})
+	return render(request, 'library/patron.html', {'user':User.objects.get(id=id), 'librarian':request.user})
 
 def patron_edit(request, **kwargs):
 	if request.method == "POST":
@@ -95,7 +95,9 @@ def patron_edit(request, **kwargs):
 
 def patron_delete(request, **kwargs):
 	user = User.objects.get(id=kwargs.get('id'))
+	Log.objects.create(user=request.user, message="Librarian " + request.user.username + " has deleted patron " + user.username, date=datetime.date.today())
 	user.delete()
+
 	return HttpResponseRedirect('/library/manage/patrons/')
 
 def patron_add(request):
@@ -117,7 +119,7 @@ def patron_add(request):
 	return render(request, 'library/add_patron.html', {'user_form':user_form, 'profile_form':profile_form})
 
 def document(request, id):
-	return render(request, 'library/document.html', {'document':Document.objects.get(id=id), 'copies':Document.objects.get(id=id).copy_set.count()}) 
+	return render(request, 'library/document.html', {'document':Document.objects.get(id=id), 'copies':Document.objects.get(id=id).copy_set.count(), 'user':request.user}) 
 
 class DocumentAddView(FormView):
 	form_class = DocumentAddForm
@@ -141,7 +143,7 @@ def document_edit(request, **kwargs):
 	if request.method == "POST":
 		form = DocumentAddForm(data=request.POST, instance=Document.objects.get(id=kwargs.get('id')))
 		if form.is_valid():
-			edit_document(Document.objects.get(id=kwargs.get('id')), request.POST)
+			edit_document(request.user, Document.objects.get(id=kwargs.get('id')), request.POST)
 			form.save()
 			return HttpResponseRedirect('/library/manage/documents/')
 	else:
@@ -149,7 +151,7 @@ def document_edit(request, **kwargs):
 	return render(request, 'library/document_edit.html', {'form':form})
 
 def document_delete(request, **kwargs):
-	delete_document(Document.objects.get(id=kwargs.get('id')))
+	delete_document(request.user, Document.objects.get(id=kwargs.get('id')))
 	return HttpResponseRedirect('/library/manage/documents/')
 
 class DocumentsView(ListView):
@@ -230,12 +232,60 @@ def add_copies_view(request, **kwargs):
 	if request.method == "POST":
 		form = AddCopiesForm(data=request.POST)
 		if form.is_valid():
-			add_copies(Document.objects.get(id=kwargs.get('id')), int(request.POST['amount']))
+			add_copies(request.user, Document.objects.get(id=kwargs.get('id')), int(request.POST['amount']))
 			return HttpResponseRedirect('/library/manage/documents/')
 	else:
 		form = AddCopiesForm()
 	return render(request, 'library/add_copies.html', {'form':form})
 
 def outstanding_request_view(request, **kwargs):
-	outstanding_request(Document.objects.get(id=kwargs.get('id')))
+	outstanding_request(request.user, Document.objects.get(id=kwargs.get('id')))
 	return HttpResponseRedirect('/library/manage/documents/')
+
+class ManageLibrariansView(ListView):
+	model = User
+	template_name = 'library/librarians.html'
+	context_object_name = 'librarians'
+	queryset = User.objects.all()
+
+class LogView(ListView):
+	model = Log
+	template_name = 'library/logs.html'
+	context_object_name = 'logs'
+	queryset = Log.objects.all()
+
+def librarian(request, id):
+	return render(request, 'library/librarian.html', {'user':User.objects.get(id=id)})
+
+def librarian_edit(request, **kwargs):
+	if request.method == "POST":
+		user_form = PatronEditForm(data=request.POST, instance=User.objects.get(id=kwargs.get('id')))
+		librarian_form = LibrarianForm(data=request.POST, instance=Profile.objects.get(id=kwargs.get('id')))
+		if user_form.is_valid():
+			if librarian_form.is_valid():
+				user = user_form.save()
+				data = librarian_form.cleaned_data
+				user.profile.phone_number = data['phone_number']
+				user.profile.adress = data['adress']
+				user.save()
+				return HttpResponseRedirect('/library/manage/librarians/')
+	else:
+		user_form = PatronEditForm()
+		librarian_form = LibrarianForm()
+	return render(request, 'library/librarian_edit.html', {'user_form':user_form, 'librarian_form':librarian_form})
+
+def librarian_delete(request, **kwargs):
+	user = User.objects.get(id=kwargs.get('id'))
+	user.delete()
+	return HttpResponseRedirect('/library/manage/librarians/')
+
+def search(request):
+	if request.method == "POST":
+		search_form = SearchForm(data=request.POST)
+		if search_form.is_valid():
+			data = search_form.cleaned_data
+			search_list = search_query(request.user, int(data['search_type']), data['query'])
+			return render(request, 'library/search.html', {'search_list':search_list})
+	else:
+		search_form = SearchForm()
+	return render(request, 'library/search_page.html', {'search_form':search_form})
